@@ -71,7 +71,7 @@ class Solution {
             // 2. remove x < nums[i]
             int x = nums[i];
             if (!deq.isEmpty()) {
-                if (deq.size() > 10 && nums[deq.peek()] <= x) {
+                if (deq.size() > 100 && nums[deq.peek()] <= x) {
                     deq.clear();
                 } else {
                     while (!deq.isEmpty() && nums[deq.peekLast()] <= x) {
