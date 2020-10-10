@@ -56,22 +56,22 @@ class Solution {
             }
 
             // 3. add i
-            deq.offer(i);
+            deq.addLast(i);
         }
-        a[0] = nums[deq.peek()];
+        a[0] = nums[deq.peekFirst()];
 
         for (int i=k; i<n; i++) {
             var leftMost = i - k + 1;
 
             // 1. remove out-of-window element
-            if (deq.peek() < leftMost) {
-                deq.poll();
+            if (deq.peekFirst() < leftMost) {
+                deq.pollFirst();
             } 
 
             // 2. remove x < nums[i]
             int x = nums[i];
             if (!deq.isEmpty()) {
-                if (deq.size() > 100 && nums[deq.peek()] <= x) {
+                if (deq.size() > 100 && nums[deq.peekFirst()] <= x) {
                     deq.clear();
                 } else {
                     while (!deq.isEmpty() && nums[deq.peekLast()] <= x) {
@@ -81,9 +81,9 @@ class Solution {
             }
 
             // 3. add i
-            deq.offer(i);
+            deq.addLast(i);
           
-            a[leftMost] = nums[deq.peek()];
+            a[leftMost] = nums[deq.peekFirst()];
         }
         return a;
     }
