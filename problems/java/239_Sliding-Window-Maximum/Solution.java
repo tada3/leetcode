@@ -51,7 +51,7 @@ class Solution {
 
         for (int i=0; i<k; i++) {
              // 2. remove x < nums[i]
-             while (!deq.isEmpty() && nums[deq.peekLast()] < nums[i]) {
+             while (!deq.isEmpty() && nums[deq.peekLast()] <= nums[i]) {
                 deq.pollLast();
             }
 
@@ -69,8 +69,15 @@ class Solution {
             } 
 
             // 2. remove x < nums[i]
-            while (!deq.isEmpty() && nums[deq.peekLast()] < nums[i]) {
-                deq.pollLast();
+            int x = nums[i];
+            if (!deq.isEmpty()) {
+                if (deq.size() > 10 && nums[deq.peek()] <= x) {
+                    deq.clear();
+                } else {
+                    while (!deq.isEmpty() && nums[deq.peekLast()] <= x) {
+                        deq.pollLast();
+                    }
+                }
             }
 
             // 3. add i
@@ -80,6 +87,8 @@ class Solution {
         }
         return a;
     }
+
+
 
     public static void main(String[] args) {
         String filename = "testcase.txt";
