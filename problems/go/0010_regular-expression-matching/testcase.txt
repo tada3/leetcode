@@ -1,4 +1,7 @@
 "aaa"
+".*a"
+true
+"aaa"
 "a*a"
 true
 "ab"
