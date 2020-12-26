@@ -1,0 +1,8 @@
+SELECT t.score, cast(t.Rank as signed) as 'Rank'
+FROM (
+select Score as score, 
+    @curRank := IF(e.Score=@prev, @curRank, @curRank + 1) AS 'Rank',
+    @prev := e.Score AS sss
+from Scores e, (select @curRank := 0) r, (select @prev := -1.234) p
+order by e.Score desc
+) AS t;

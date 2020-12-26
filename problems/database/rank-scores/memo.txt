@@ -1,0 +1,54 @@
+select Salary, 
+    @curRank := @curRank + 1 AS rrr,
+    @prev := 
+from Employee e, (select @curRank := 0) r
+order by Salary
+
+
+select Salary, 
+    @curRank := IF(e.Salary=@prev, @curRank, @curRank + 1) AS rrr,
+    @prev := e.Salary AS sss
+from Employee e, (select @curRank := 0) r, (select @prev := 0) p
+order by Salary;
+
+SELECT t.Salary as score, t.Rank
+FROM (
+select Score, 
+    @curRank := IF(e.Score=@prev, @curRank, @curRank + 1) AS 'Rank',
+    @prev := e.Score AS sss
+from Scores e, (select @curRank := 0) r, (select @prev := 0) p
+order by Scores
+) AS t;
+
+create table Scores (Id int, Score float);
+insert into Scores values(1, 3.50);
+insert into Scores values(2, 3.65);
+
+SELECT t.score, t.Rank
+FROM (
+select Score as score, 
+    @curRank := IF(e.Score=@prev, @curRank, @curRank + 1) AS 'Rank',
+    @prev := e.Score AS sss
+from Scores e, (select @curRank := 0) r, (select @prev := 0.0) p
+order by e.Score desc
+) AS t;
+
+
+SELECT t.score, cast(t.Rank as signed) as 'Rank'
+FROM (
+select Score as score, 
+    @curRank := IF(e.Score=@prev, @curRank, @curRank + 1) AS 'Rank',
+    @prev := e.Score AS sss
+from Scores e, (select @curRank := 0) r, (select @prev := 0) p
+order by e.Score desc
+) AS t;
+
+
+SELECT t.score, t.Rank
+FROM (
+select Score as score, 
+    @curRank := IF(e.Score=@prev, @curRank, @curRank + 1) AS 'Rank',
+    @prev := e.Score AS sss
+from Scores e, (select @curRank := 0) r, (select @prev := -1.234) p
+order by e.Score desc
+) AS t;
