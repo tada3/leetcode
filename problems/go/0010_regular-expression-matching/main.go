@@ -9,16 +9,14 @@ import (
 )
 
 func isMatch(s string, p string) bool {
-	fmt.Println("000 ", s, p)
+	//fmt.Println("000 ", s, p)
 	m := createMatcher(p)
 	for _, c := range s {
 		if !m.match(c) {
-			fmt.Println("111")
 			return false
 		}
 	}
 	if !m.match(0) {
-		fmt.Println("222")
 		return false
 	}
 	return true
@@ -69,33 +67,47 @@ func createMatcher(p string) *matcher {
 	return m
 }
 
-func (m *matcher) matchState(c rune, s *state) (bool, []*state) {
-	//fmt.Printf("MMMM %c, %d\n", c, m.pos)
+func (m *matcher) matchState(c rune, s *state) []*state {
+	//fmt.Printf("MMMM %c, %d, %d\n", c, c, s.pos)
 	if c == 0 {
 		if s.finished() {
-			return true, nil
+			return nil
 		}
 		current := s.currentToken()
-		if s.atLastToken() && current.repeat {
-			return true, nil
+		if current.repeat {
+			if s.atLastToken() {
+				return nil
+			}
+			s.next()
+			return m.matchState(c, s)
 		}
 		s.isActive = false
-		return false, nil
+		return nil
 	}
 
 	if s.finished() {
 		s.isActive = false
-		return false, nil
+		return nil
 	}
 
 	current := s.currentToken()
 	if current.repeat {
 		if current.char == '.' {
-			// longest match, repeat forever
-			// do not check the next token
-			return true, nil
+			//fmt.Println("REPEAT ANY")
+			newStates := make([]*state, 0)
+			newState := &state{
+				isActive: true,
+				pos:      s.pos + 1,
+				m:        m,
+			}
+			newStates1 := m.matchState(c, newState)
+			newStates = append(newStates, newState)
+			newStates = append(newStates, newStates1...)
+
+			return newStates
 		} else {
 			if current.char == c {
+				//fmt.Println("REPEAT MATCH")
 				// 2 possible paths:
 				//    (a) stay this token
 				//    (b) move to next token
@@ -105,12 +117,13 @@ func (m *matcher) matchState(c rune, s *state) (bool, []*state) {
 					pos:      s.pos + 1,
 					m:        m,
 				}
-				_, newStates1 := m.matchState(c, newState)
+				newStates1 := m.matchState(c, newState)
 				newStates = append(newStates, newState)
 				newStates = append(newStates, newStates1...)
-				return true, newStates
+				return newStates
 
 			} else {
+				//fmt.Println("REPEAT NOT MATCH")
 				// move to the next token
 				s.next()
 				return m.matchState(c, s)
@@ -119,39 +132,49 @@ func (m *matcher) matchState(c rune, s *state) (bool, []*state) {
 
 	} else {
 		if current.char == '.' {
+			//fmt.Println("ANY")
 			s.next()
-			return true, nil
+			return nil
 		} else {
+
 			if current.char == c {
+				//fmt.Println("MATCH")
 				s.next()
-				return true, nil
+				return nil
 
 			} else {
-				return false, nil
+				//fmt.Println("NOT MATCH")
+				s.isActive = false
+				return nil
 			}
 		}
 	}
 }
 
 func (m *matcher) match(c rune) bool {
-	ret := false
+	//fmt.Printf("match() %c\n", c)
 	added := make([]*state, 0)
 	for _, s := range m.states {
 		if !s.isActive {
 			continue
 		}
-		ok, newStates := m.matchState(c, s)
-		if ok {
-			ret = true
-		} else {
-			s.isActive = false
-		}
+		newStates := m.matchState(c, s)
 		if newStates != nil {
 			added = append(added, newStates...)
 		}
 	}
 	m.states = append(m.states, added...)
-	return ret
+
+	//for _, s := range m.states {
+	//	fmt.Printf("XXX s=%+v\n", s)
+	//}
+
+	for _, s := range m.states {
+		if s.isActive {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *state) finished() bool {
