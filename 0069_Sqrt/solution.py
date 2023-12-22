@@ -4,23 +4,17 @@ class Solution:
     def mySqrt(self, x: int) -> int:
         if x == 0:
             return 0
-
-        p = 2
-        while p < x:
-            #print(f'x = {x}, p = {p}')
-            pp = p * p
-            if pp < x:
-                if 4 * pp < x:
-                    p = 2 * p
-                else:
-                    p += 1
-                continue
-            if pp == x:
-                return p
+        if x <= 3:
+            return 1
+        l = 2
+        h = x - 1
+        while (h - l) > 1:
+            m = (l + h) / 2
+            if m * m <= x:
+                l = m
             else:
-                return p - 1
-            
-        return 1
+                h = m 
+        return l
 
 def main(x):
     print(f'Input: x = {x}')
@@ -28,10 +22,13 @@ def main(x):
     print(f'Output: {ret}')
 
 if __name__ == "__main__":
-    #x = 4
+    x = 4
     #x = 8
-    x = 0
+    #x = 0
     #x = 16
     #x = 144
-    #x = 6
+    #x = 0
+    #x = 1
+    #x = 3
+
     main(x)
