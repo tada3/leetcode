@@ -1,0 +1,20 @@
+solution_divide.py
+Time Limit Exceeded
+14 / 1017 testcases passed
+Last Executed Input
+x = 2147395599
+
+225 
+3 -> 75
+3 -> 25
+
+
+226
+2 -> 113
+2 -> 56.5
+
+2 -> 28.25
+2 -> 14.125
+
+2 -> 7.0625
+2
